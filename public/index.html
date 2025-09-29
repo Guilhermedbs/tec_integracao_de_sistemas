@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor de Qualidade da Água - Praias</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e1e1;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .alerts-list {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .alerts-list h2 {
+      color: #333;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-item {
+      background: #f8f9ff;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .alert-item:hover {
+      background: #f0f2ff;
+      transform: translateX(5px);
+    }
+
+    .alert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .beach-name {
+      font-weight: 700;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .alert-date {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .alert-message {
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .no-alerts {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      padding: 40px 0;
+    }
+
+    .loading {
+      text-align: center;
+      color: #667eea;
+      padding: 20px;
+    }
+
+    .success-message,
+    .error-message {
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .refresh-btn {
+      background: #28a745;
+      margin-left: auto;
+      margin-bottom: 20px;
+      display: flex;
+      width: fit-content;
+    }
+
+    .refresh-btn:hover {
+      background: #218838;
+    }
+
+    /* Estilos para a seção do clima */
+    .weather-section {
+      margin-bottom: 40px;
+    }
+
+    .weather-search {
+      margin-bottom: 25px;
+    }
+
+    .weather-info {
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .weather-icon img {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .weather-details h3 {
+      margin: 0 0 5px 0;
+      color: #333;
+      font-size: 1.3rem;
+    }
+
+    .weather-details p {
+      margin: 0 0 10px 0;
+      color: #666;
+      text-transform: capitalize;
+    }
+
+    .temperature {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .temperature small {
+      font-size: 0.8rem;
+      color: #999;
+      font-weight: normal;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .weather-item {
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .weather-item i {
+      font-size: 1.2rem;
+      color: #667eea;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .weather-item span {
+      display: block;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .weather-item strong {
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .weather-indicators {
+      margin-top: 20px;
+    }
+
+    .weather-indicator {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .weather-indicator.warning {
+      background: #fff3cd;
+      color: #856404;
+      border-left: 4px solid #ffc107;
+    }
+
+    .weather-indicator.caution {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    .weather-indicator.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border-left: 4px solid #17a2b8;
+    }
+
+    @media (max-width: 768px) {
+      .weather-main {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .weather-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <i class="fas fa-water"></i>
+        Monitor de Qualidade da Água
+      </h1>
+      <p>Sistema de monitoramento das condições das praias</p>
+    </div>
+
+    <div class="main-content">
+      <div class="card">
+        <h2>
+          <i class="fas fa-plus-circle"></i>
+          Criar Novo Alerta
+        </h2>
+
+        <div class="success-message" id="successMessage">
+          <i class="fas fa-check-circle"></i>
+          Alerta criado com sucesso!
+        </div>
+
+        <div class="error-message" id="errorMessage">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="errorText">Erro ao criar alerta.</span>
+        </div>
+
+        <form id="alertForm">
+          <div class="form-group">
+            <label for="beachName">
+              <i class="fas fa-map-marker-alt"></i>
+              Nome da Praia
+            </label>
+            <input type="text" id="beachName" name="beachName" required placeholder="Ex: Copacabana, Ipanema...">
+          </div>
+
+          <div class="form-group">
+            <label for="alert">
+              <i class="fas fa-exclamation-circle"></i>
+              Alerta
+            </label>
+            <textarea id="alert" name="alert" required
+              placeholder="Descreva a condição da água ou alerta..."></textarea>
+          </div>
+
+          <button type="submit" class="btn" id="submitBtn">
+            <i class="fas fa-paper-plane"></i>
+            Criar Alerta
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>
+          <i class="fas fa-chart-line"></i>
+          Status Atual
+        </h2>
+        <div style="text-align: center; padding: 20px;">
+          <div style="font-size: 2rem; color: #667eea; margin-bottom: 10px;">
+            <i class="fas fa-tint"></i>
+          </div>
+          <p style="color: #666;">Sistema ativo e monitorando</p>
+          <p style="color: #999; font-size: 0.9rem; margin-top: 10px;">
+            <span id="alertCount">0</span> alertas registrados
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="weather-section">
+      <div class="card">
+        <h2>
+          <i class="fas fa-cloud-sun"></i>
+          Condições Meteorológicas
+        </h2>
+        <div class="weather-search">
+          <div class="form-group">
+            <label for="citySearch">
+              <i class="fas fa-search"></i>
+              Buscar condições para uma cidade
+            </label>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="citySearch" placeholder="Ex: Rio de Janeiro, Florianópolis..." style="flex: 1;">
+              <button type="button" class="btn" onclick="searchWeather()" id="weatherBtn">
+                <i class="fas fa-search"></i>
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="weatherDisplay" style="display: none;">
+          <div class="weather-info">
+            <div class="weather-main">
+              <div class="weather-icon">
+                <img id="weatherIcon" src="" alt="Clima" style="width: 80px; height: 80px;">
+              </div>
+              <div class="weather-details">
+                <h3 id="weatherLocation">-</h3>
+                <p id="weatherDescription">-</p>
+                <div class="temperature">
+                  <span id="weatherTemp">-</span>°C
+                  <small>Sensação: <span id="weatherFeels">-</span>°C</small>
+                </div>
+              </div>
+            </div>
+            <div class="weather-grid">
+              <div class="weather-item">
+                <i class="fas fa-eye"></i>
+                <span>Visibilidade</span>
+                <strong id="weatherVisibility">-</strong>
+              </div>
+              <div class="weather-item">
+                <i class="fas fa-wind"></i>
+                <span>Vento</span>
+                <strong id="weatherWind">-</strong>
+              </div>
+              <div class="weather-item">
+                <i class="fas fa-tint"></i>
+                <span>Umidade</span>
+                <strong id="weatherHumidity">-</strong>
+              </div>
+              <div class="weather-item">
+                <i class="fas fa-sun"></i>
+                <span>Índice UV</span>
+                <strong id="weatherUV">-</strong>
+              </div>
+              <div class="weather-item">
+                <i class="fas fa-thermometer-half"></i>
+                <span>Pressão</span>
+                <strong id="weatherPressure">-</strong>
+              </div>
+            </div>
+          </div>
+          <div id="weatherIndicators" class="weather-indicators">
+          </div>
+        </div>
+        <div id="weatherError" class="error-message" style="display: none;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="weatherErrorText">Erro ao buscar dados meteorológicos</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="alerts-list">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>
+          <i class="fas fa-list"></i>
+          Alertas Recentes
+        </h2>
+        <button class="btn refresh-btn" onclick="loadAlerts()">
+          <i class="fas fa-sync-alt"></i>
+          Atualizar
+        </button>
+      </div>
+      <div id="alertsList">
+        <div class="loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          Carregando alertas...
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadAlerts();
+    });
+    document.getElementById('alertForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando...';
+      const formData = new FormData(this);
+      const alertData = {
+        beachName: formData.get('beachName'),
+        alert: formData.get('alert')
+      };
+      try {
+        const response = await fetch('/api/alerts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(alertData)
+        });
+        if (response.ok) {
+          successMessage.style.display = 'block';
+          this.reset();
+          loadAlerts();
+        } else {
+          const error = await response.json();
+          errorText.textContent = error.error || 'Erro ao criar alerta';
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        errorText.textContent = 'Erro de conexão com o servidor';
+        errorMessage.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Criar Alerta';
+      }
+    });
+    async function loadAlerts() {
+      const alertsList = document.getElementById('alertsList');
+      const alertCount = document.getElementById('alertCount');
+      alertsList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Carregando alertas...</div>';
+      try {
+        const response = await fetch('/api/alerts');
+        const alerts = await response.json();
+        alertCount.textContent = alerts.length;
+        if (alerts.length === 0) {
+          alertsList.innerHTML = '<div class="no-alerts"><i class="fas fa-info-circle"></i> Nenhum alerta registrado ainda.</div>';
+        } else {
+          alertsList.innerHTML = alerts.map(alert => `
+                        <div class="alert-item">
+                            <div class="alert-header">
+                                <div class="beach-name">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${escapeHtml(alert.beachName)}
+                                </div>
+                                <div class="alert-date">
+                                    ${formatDate(alert.createdAt)}
+                                </div>
+                            </div>
+                            <div class="alert-message">
+                                ${escapeHtml(alert.alert)}
+                            </div>
+                        </div>
+                    `).join('');
+        }
+      } catch (error) {
+        alertsList.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar alertas</div>';
+      }
+    }
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    async function searchWeather() {
+      const cityInput = document.getElementById('citySearch');
+      const weatherBtn = document.getElementById('weatherBtn');
+      const weatherDisplay = document.getElementById('weatherDisplay');
+      const weatherError = document.getElementById('weatherError');
+      const weatherErrorText = document.getElementById('weatherErrorText');
+      const city = cityInput.value.trim();
+      if (!city) {
+        weatherErrorText.textContent = 'Digite o nome de uma cidade';
+        weatherError.style.display = 'block';
+        weatherDisplay.style.display = 'none';
+        return;
+      }
+      weatherError.style.display = 'none';
+      weatherDisplay.style.display = 'none';
+      weatherBtn.disabled = true;
+      weatherBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+      try {
+        const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}&country=BR`);
+        const data = await response.json();
+        if (response.ok) {
+          displayWeatherData(data);
+          weatherDisplay.style.display = 'block';
+        } else {
+          weatherErrorText.textContent = data.error || 'Erro ao buscar dados meteorológicos';
+          weatherError.style.display = 'block';
+        }
+      } catch (error) {
+        weatherErrorText.textContent = 'Erro de conexão com o servidor';
+        weatherError.style.display = 'block';
+      } finally {
+        weatherBtn.disabled = false;
+        weatherBtn.innerHTML = '<i class="fas fa-search"></i> Buscar';
+      }
+    }
+    function displayWeatherData(data) {
+      const weather = data.weather;
+      const indicators = data.qualityIndicators;
+      document.getElementById('weatherLocation').textContent = weather.location;
+      document.getElementById('weatherDescription').textContent = weather.description;
+      document.getElementById('weatherTemp').textContent = weather.temperature;
+      document.getElementById('weatherFeels').textContent = weather.feelsLike;
+      const weatherIcon = document.getElementById('weatherIcon');
+      if (weather.icon && weather.icon !== '01d') {
+        weatherIcon.src = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
+      } else {
+        weatherIcon.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMTIiIGZpbGw9IiNGRkQ3MDAiLz4KPGxpbmUgeDE9IjQwIiB5MT0iMTAiIHgyPSI0MCIgeTI9IjIwIiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxsaW5lIHgxPSI0MCIgeTE9IjYwIiB4Mj0iNDAiIHkyPSI3MCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K';
+      }
+      document.getElementById('weatherVisibility').textContent = weather.visibility.toFixed(1) + ' km';
+      document.getElementById('weatherWind').textContent = weather.windSpeed.toFixed(1) + ' m/s';
+      document.getElementById('weatherHumidity').textContent = weather.humidity + '%';
+      document.getElementById('weatherUV').textContent = weather.uvIndex.toFixed(1);
+      document.getElementById('weatherPressure').textContent = weather.pressure + ' hPa';
+      const indicatorsContainer = document.getElementById('weatherIndicators');
+      if (indicators && indicators.length > 0) {
+        indicatorsContainer.innerHTML = indicators.map(indicator => `
+                    <div class="weather-indicator ${indicator.type}">
+                        <i class="fas ${getIndicatorIcon(indicator.type)}"></i>
+                        <span>${indicator.message}</span>
+                    </div>
+                `).join('');
+      } else {
+        indicatorsContainer.innerHTML = `
+                    <div class="weather-indicator info">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Condições meteorológicas normais para atividades na praia.</span>
+                    </div>
+                `;
+      }
+    }
+    function getIndicatorIcon(type) {
+      switch (type) {
+        case 'warning': return 'fa-exclamation-triangle';
+        case 'caution': return 'fa-exclamation-circle';
+        case 'info': return 'fa-info-circle';
+        default: return 'fa-info-circle';
+      }
+    }
+    document.getElementById('citySearch').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        searchWeather();
+      }
+    });
+  </script>
+</body>
+
+</html>

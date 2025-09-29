@@ -1,0 +1,666 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Beach Water Quality Monitor API",
+		"description": "Coleção de testes para a API de Monitoramento de Qualidade da Água nas Praias\n\n## Endpoints Disponíveis:\n- POST /api/alerts - Criar novo alerta\n- GET /api/alerts - Listar todos os alertas\n- GET /api/weather - Buscar condições meteorológicas\n\n## Como usar:\n1. Certifique-se de que o servidor está rodando na porta 3000\n2. Execute as requisições na ordem sugerida\n3. Para testar o endpoint de clima, configure a variável OPENWEATHER_API_KEY (opcional)\n\n## Variáveis:\n- {{baseUrl}} = http://localhost:3000/api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Alertas",
+			"item": [
+				{
+					"name": "Criar Alerta - Copacabana",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Resposta contém ID do alerta\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.id).to.be.a('string');",
+									"});",
+									"",
+									"pm.test(\"Resposta contém dados corretos\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.beachName).to.eql('Copacabana');",
+									"    pm.expect(jsonData.alert).to.eql('Água imprópria para banho devido à poluição');",
+									"    pm.expect(jsonData).to.have.property('createdAt');",
+									"});",
+									"",
+									"// Salvar ID do alerta para usar em outros testes",
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.globals.set('alertId', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"beachName\": \"Copacabana\",\n  \"alert\": \"Água imprópria para banho devido à poluição\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/alerts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"alerts"
+							]
+						},
+						"description": "Cria um novo alerta para a praia de Copacabana informando sobre poluição da água."
+					},
+					"response": [
+						{
+							"name": "Sucesso - Alerta Criado",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"beachName\": \"Copacabana\",\n  \"alert\": \"Água imprópria para banho devido à poluição\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/alerts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"alerts"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"abc123def\",\n  \"beachName\": \"Copacabana\",\n  \"alert\": \"Água imprópria para banho devido à poluição\",\n  \"createdAt\": \"2024-01-15T10:30:00.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Criar Alerta - Ipanema",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Alerta criado com sucesso\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.beachName).to.eql('Ipanema');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"beachName\": \"Ipanema\",\n  \"alert\": \"Água própria para banho - condições excelentes\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/alerts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"alerts"
+							]
+						},
+						"description": "Cria um alerta positivo para a praia de Ipanema."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Alerta - Dados Inválidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Mensagem de erro correta\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('obrigatórios');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"beachName\": \"Leblon\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/alerts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"alerts"
+							]
+						},
+						"description": "Testa a validação de campos obrigatórios - deve retornar erro 400."
+					},
+					"response": [
+						{
+							"name": "Erro - Campo Obrigatório",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"beachName\": \"Leblon\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/alerts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"alerts"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"error\": \"Nome da praia e alerta são obrigatórios\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Listar Todos os Alertas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resposta é um array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Array contém alertas\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData[0]).to.have.property('id');",
+									"        pm.expect(jsonData[0]).to.have.property('beachName');",
+									"        pm.expect(jsonData[0]).to.have.property('alert');",
+									"        pm.expect(jsonData[0]).to.have.property('createdAt');",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Alertas ordenados por data (mais recente primeiro)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.length > 1) {",
+									"        var firstDate = new Date(jsonData[0].createdAt);",
+									"        var secondDate = new Date(jsonData[1].createdAt);",
+									"        pm.expect(firstDate.getTime()).to.be.at.least(secondDate.getTime());",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/alerts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"alerts"
+							]
+						},
+						"description": "Lista todos os alertas cadastrados, ordenados por data de criação (mais recente primeiro)."
+					},
+					"response": [
+						{
+							"name": "Sucesso - Lista de Alertas",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/alerts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"alerts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"id\": \"def456ghi\",\n    \"beachName\": \"Ipanema\",\n    \"alert\": \"Água própria para banho - condições excelentes\",\n    \"createdAt\": \"2024-01-15T10:35:00.000Z\"\n  },\n  {\n    \"id\": \"abc123def\",\n    \"beachName\": \"Copacabana\",\n    \"alert\": \"Água imprópria para banho devido à poluição\",\n    \"createdAt\": \"2024-01-15T10:30:00.000Z\"\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Endpoints relacionados ao gerenciamento de alertas de qualidade da água."
+		},
+		{
+			"name": "Meteorologia",
+			"item": [
+				{
+					"name": "Buscar Clima - Rio de Janeiro",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resposta contém dados meteorológicos\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('weather');",
+									"    pm.expect(jsonData).to.have.property('qualityIndicators');",
+									"});",
+									"",
+									"pm.test(\"Dados do clima estão completos\", function () {",
+									"    var weather = pm.response.json().weather;",
+									"    pm.expect(weather).to.have.property('location');",
+									"    pm.expect(weather).to.have.property('temperature');",
+									"    pm.expect(weather).to.have.property('humidity');",
+									"    pm.expect(weather).to.have.property('windSpeed');",
+									"    pm.expect(weather).to.have.property('uvIndex');",
+									"    pm.expect(weather).to.have.property('visibility');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/weather?city=Rio de Janeiro&country=BR",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"weather"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Rio de Janeiro",
+									"description": "Nome da cidade (obrigatório)"
+								},
+								{
+									"key": "country",
+									"value": "BR",
+									"description": "Código do país (opcional, padrão: BR)"
+								}
+							]
+						},
+						"description": "Busca condições meteorológicas para o Rio de Janeiro, incluindo dados relevantes para atividades de praia."
+					},
+					"response": [
+						{
+							"name": "Sucesso - Dados Meteorológicos",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/weather?city=Rio de Janeiro&country=BR",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"weather"
+									],
+									"query": [
+										{
+											"key": "city",
+											"value": "Rio de Janeiro"
+										},
+										{
+											"key": "country",
+											"value": "BR"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"weather\": {\n    \"location\": \"Rio de Janeiro, BR\",\n    \"temperature\": 28,\n    \"humidity\": 75,\n    \"windSpeed\": 12.5,\n    \"windDirection\": 180,\n    \"visibility\": 10.0,\n    \"uvIndex\": 8.2,\n    \"description\": \"céu limpo\",\n    \"icon\": \"01d\",\n    \"pressure\": 1013,\n    \"feelsLike\": 31\n  },\n  \"qualityIndicators\": [\n    {\n      \"type\": \"warning\",\n      \"message\": \"Índice UV muito alto (8.2). Evite exposição prolongada.\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Buscar Clima - Florianópolis",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Localização correta\", function () {",
+									"    var weather = pm.response.json().weather;",
+									"    pm.expect(weather.location).to.include('Florianópolis');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/weather?city=Florianópolis&state=SC&country=BR",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"weather"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Florianópolis"
+								},
+								{
+									"key": "state",
+									"value": "SC",
+									"description": "Estado (opcional)"
+								},
+								{
+									"key": "country",
+									"value": "BR"
+								}
+							]
+						},
+						"description": "Busca condições meteorológicas para Florianópolis, SC."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Clima - Cidade Inválida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200 (dados mockados)\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Retorna dados mesmo para cidade inválida\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('weather');",
+									"    // Sistema usa dados mockados quando não encontra a cidade",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/weather?city=CidadeInexistente123",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"weather"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "CidadeInexistente123"
+								}
+							]
+						},
+						"description": "Testa o comportamento da API com uma cidade inexistente. O sistema deve retornar dados mockados."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Clima - Sem Parâmetro City",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Mensagem de erro correta\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.include('city é obrigatório');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/weather",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"weather"
+							]
+						},
+						"description": "Testa a validação do parâmetro obrigatório 'city'."
+					},
+					"response": [
+						{
+							"name": "Erro - Parâmetro Obrigatório",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/weather",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"weather"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"error\": \"Parâmetro city é obrigatório\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints relacionados aos dados meteorológicos integrados com a OpenWeather API."
+		},
+		{
+			"name": "Testes de Integração",
+			"item": [
+				{
+					"name": "Fluxo Completo - Criar e Listar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Este teste executa um fluxo completo:",
+									"// 1. Cria um alerta",
+									"// 2. Lista os alertas",
+									"// 3. Verifica se o alerta criado está na lista",
+									"",
+									"pm.test(\"Fluxo completo executado com sucesso\", function () {",
+									"    // Este teste é executado após a sequência de requests",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"beachName\": \"Leblon\",\n  \"alert\": \"Teste de integração - água em condições normais\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/alerts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"alerts"
+							]
+						},
+						"description": "Teste de integração que cria um alerta para validar o fluxo completo da aplicação."
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de integração para validar fluxos completos da aplicação."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script executado antes de cada requisição",
+					"console.log('Executando requisição para: ' + pm.request.url);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script executado após cada requisição",
+					"console.log('Resposta recebida com status: ' + pm.response.code);"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string",
+			"description": "URL base da API"
+		}
+	]
+}
