@@ -230,4 +230,6 @@ Fiz uma interface bem simples mas funcional, com:
 - A interface é responsiva e funciona bem no mobile
 - Os testes cobrem os cenários principais
 
+---
 
+**Link da aplicação**: https://tec-integracao-de-sistemas.vercel.app/
